@@ -12,29 +12,15 @@ import (
 type connTraffic struct {
 	essentials.Conn
 
-	streamID string
-	stream   EventStream
-	ctx      context.Context
+	ctx context.Context
 }
 
 func (c connTraffic) Read(b []byte) (int, error) {
-	n, err := c.Conn.Read(b)
-
-	if n > 0 {
-		c.stream.Send(c.ctx, NewEventTraffic(c.streamID, uint(n), true))
-	}
-
-	return n, err //nolint: wrapcheck
+	return c.Conn.Read(b) //nolint: wrapcheck
 }
 
 func (c connTraffic) Write(b []byte) (int, error) {
-	n, err := c.Conn.Write(b)
-
-	if n > 0 {
-		c.stream.Send(c.ctx, NewEventTraffic(c.streamID, uint(n), false))
-	}
-
-	return n, err //nolint: wrapcheck
+	return c.Conn.Write(b) //nolint: wrapcheck
 }
 
 type connRewind struct {

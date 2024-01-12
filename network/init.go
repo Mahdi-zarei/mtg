@@ -36,7 +36,7 @@ const (
 
 	// DefaultTCPKeepAlivePeriod defines a time period between 2 consequitive
 	// probes.
-	DefaultTCPKeepAlivePeriod = 10 * time.Second
+	DefaultTCPKeepAlivePeriod = 2 * time.Second
 
 	// ProxyDialerOpenThreshold is used for load balancing SOCKS5 dialer only.
 	//

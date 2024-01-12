@@ -3,7 +3,6 @@ package mtglib
 import (
 	"context"
 	"crypto/rand"
-	"encoding/base64"
 	"net"
 	"time"
 
@@ -15,7 +14,6 @@ type streamContext struct {
 	ctxCancel    context.CancelFunc
 	clientConn   essentials.Conn
 	telegramConn essentials.Conn
-	streamID     string
 	dc           int
 	logger       Logger
 }
@@ -64,10 +62,8 @@ func newStreamContext(ctx context.Context, logger Logger, clientConn essentials.
 		ctx:        ctx,
 		ctxCancel:  cancel,
 		clientConn: clientConn,
-		streamID:   base64.RawURLEncoding.EncodeToString(connIDBytes),
 	}
 	streamCtx.logger = logger.
-		BindStr("stream-id", streamCtx.streamID).
 		BindStr("client-ip", streamCtx.ClientIP().String())
 
 	return streamCtx

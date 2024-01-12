@@ -21,16 +21,21 @@ func Relay(ctx context.Context, log Logger, telegramConn, clientConn essentials.
 		clientConn.Close()
 	}()
 
-	closeChan := make(chan struct{})
+	closeChan := make(chan struct{}, 2)
 
 	go func() {
-		defer close(closeChan)
-
+		defer cancel()
 		pump(log, telegramConn, clientConn, "client -> telegram")
+		closeChan <- struct{}{}
 	}()
 
-	pump(log, clientConn, telegramConn, "telegram -> client")
+	go func() {
+		defer cancel()
+		pump(log, clientConn, telegramConn, "telegram -> client")
+		closeChan <- struct{}{}
+	}()
 
+	<-closeChan
 	<-closeChan
 }
 

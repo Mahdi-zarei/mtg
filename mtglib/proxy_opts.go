@@ -23,21 +23,6 @@ type ProxyOpts struct {
 	// This is a mandatory setting.
 	AntiReplayCache AntiReplayCache
 
-	// IPBlocklist defines an instance of IP blocklist.
-	//
-	// This is a mandatory setting.
-	IPBlocklist IPBlocklist
-
-	// IPAllowlist defines a whitelist of IPs to allow to use proxy.
-	//
-	// This is an optional setting, ignored by default (no restrictions).
-	IPAllowlist IPBlocklist
-
-	// EventStream defines an instance of event stream.
-	//
-	// This ia a mandatory setting.
-	EventStream EventStream
-
 	// Logger defines an instance of the logger.
 	//
 	// This is a mandatory setting.
@@ -119,12 +104,6 @@ func (p ProxyOpts) valid() error {
 		return ErrNetworkIsNotDefined
 	case p.AntiReplayCache == nil:
 		return ErrAntiReplayCacheIsNotDefined
-	case p.IPBlocklist == nil:
-		return ErrIPBlocklistIsNotDefined
-	case p.IPAllowlist == nil:
-		return ErrIPAllowlistIsNotDefined
-	case p.EventStream == nil:
-		return ErrEventStreamIsNotDefined
 	case p.Logger == nil:
 		return ErrLoggerIsNotDefined
 	case !p.Secret.Valid():

@@ -19,7 +19,6 @@ package mtglib
 import (
 	"context"
 	"errors"
-	"net"
 	"net/http"
 	"time"
 
@@ -160,59 +159,6 @@ type AntiReplayCache interface {
 	// is required to store this information somewhere else, then it has to do
 	// that.
 	SeenBefore(data []byte) bool
-}
-
-// IPBlocklist filters requests based on IP address.
-//
-// If this filter has an IP address, then mtg closes a request without reading
-// anything from a socket. It also does not give such request to a worker pool,
-// so in worst cases you can expect that you invoke this object more frequent
-// than defined proxy concurrency.
-type IPBlocklist interface {
-	// Contains checks if given IP address belongs to this blocklist If. it is, a
-	// connection is terminated .
-	Contains(net.IP) bool
-
-	// Run starts a background update procedure for a blocklist
-	Run(time.Duration)
-
-	// Shutdown stops a blocklist. It is assumed that none will access it after.
-	Shutdown()
-}
-
-// Event is a data structure which is populated during mtg request processing
-// lifecycle. Each request popluates many events:
-//  1. Client connected
-//  2. Request is finished
-//  3. Connection to Telegram server is established
-//
-// and so on. All these events are data structures but all of them must conform
-// the same interface.
-type Event interface {
-	// StreamID returns an identifier of the stream, connection, request, you name
-	// it. All events within the same stream returns the same stream id.
-	StreamID() string
-
-	// Timestamp returns a timestamp when this event was generated.
-	Timestamp() time.Time
-}
-
-// EventStream is an abstraction that accepts a set of events produced by mtg.
-// Its main goal is to inject your logging or monitoring system.
-//
-// The idea is simple. When mtg works, it emits a set of events during a
-// lifecycle of the requestor: EventStart, EventFinish etc. mtg is a producer
-// which puts these events into a stream. Responsibility of the stream is to
-// deliver this event to consumers/observers. There might be many different
-// observers (for example, you want to have both statsd and prometheus), mtg
-// should know nothing about them.
-type EventStream interface {
-	// Send delivers an event to observers. Given context has to be respected. If
-	// the context is closed, all blocking operations should be released ASAP.
-	//
-	// It is possible that context is closed but the message is delivered.
-	// EventStream implementations should solve this issue somehow.
-	Send(context.Context, Event)
 }
 
 // Logger defines an interface of the logger used by mtglib.
